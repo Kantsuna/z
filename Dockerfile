@@ -7,7 +7,7 @@ COPY math_server.py /app/
 # Exemplo: RUN pip install -r requirements.txt
 
 # Exponha a porta 8080
-EXPOSE 8080
+EXPOSE 9090
 
 # Comando para executar o servidor Python quando o contêiner for iniciado
 CMD ["python", "/app/math_server.py"]
