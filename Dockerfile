@@ -1,76 +1,57 @@
-import back4app
-import socket
-import threading
-import math
+const net = require('net');
 
-# Defina as credenciais do back4app
-back4app.initialize("your_app_id", "your_rest_key")
-back4app.connect()
+const server = net.createServer((socket) => {
+    console.log('Cliente conectado');
 
-# Funções matemáticas
-def fatorial(n):
-    return math.factorial(n)
+    socket.on('data', (data) => {
+        const requestData = data.toString().trim();
+        console.log('Recebido:', requestData);
 
-def arranjo(n, k):
-    return math.factorial(n) / math.factorial(n - k)
+        const [operation, ...args] = requestData.split(' ');
+        const result = calculate(operation, args.map(arg => parseInt(arg)));
 
-def combinacao(n, k):
-    return math.factorial(n) / (math.factorial(k) * math.factorial(n - k))
+        socket.write(result.toString());
+    });
 
-def permutacao(n, k):
-    return math.factorial(n) / math.factorial(n - k)
+    socket.on('end', () => {
+        console.log('Cliente desconectado');
+    });
+});
 
-# Função de tratamento de conexão
-def handle_connection(client_socket):
-    print("Conexão estabelecida com:", client_socket)
-    while True:
-        # Recebe os dados do cliente
-        data = client_socket.recv(1024).decode("utf-8")
-        if not data:
-            break
+server.listen(3000, () => {
+    console.log('Servidor TCP rodando na porta 3000');
+});
 
-        # Parseia a mensagem recebida
-        try:
-            operacao, args = data.split(":")
-            args = [int(arg) for arg in args.split(",")]
-        except ValueError:
-            client_socket.send("Erro: Formato de mensagem inválido.".encode("utf-8"))
-            continue
+function calculate(operation, args) {
+    switch (operation) {
+        case 'factorial':
+            return factorial(args[0]);
+        case 'permutation':
+            return permutation(args[0], args[1]);
+        case 'combination':
+            return combination(args[0], args[1]);
+        case 'arrangement':
+            return arrangement(args[0], args[1]);
+        default:
+            return 'Operação não suportada';
+    }
+}
 
-        # Executa a operação solicitada
-        if operacao == "fatorial":
-            resultado = fatorial(*args)
-        elif operacao == "arranjo":
-            resultado = arranjo(*args)
-        elif operacao == "combinacao":
-            resultado = combinacao(*args)
-        elif operacao == "permutacao":
-            resultado = permutacao(*args)
-        else:
-            resultado = "Erro: Operação não suportada."
+function factorial(n) {
+    if (n === 0 || n === 1) {
+        return 1;
+    }
+    return n * factorial(n - 1);
+}
 
-        # Envia o resultado de volta para o cliente
-        client_socket.send(str(resultado).encode("utf-8"))
+function permutation(n, r) {
+    return factorial(n) / factorial(n - r);
+}
 
-    # Fecha o socket do cliente
-    client_socket.close()
+function combination(n, r) {
+    return factorial(n) / (factorial(r) * factorial(n - r));
+}
 
-# Configurações do servidor
-HOST = "127.0.0.1"
-PORT = 12345
-
-# Inicializa o socket do servidor
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind((HOST, PORT))
-server_socket.listen(5)
-
-print("Servidor TCP está esperando por conexões...")
-
-# Loop principal para lidar com as conexões
-while True:
-    # Aceita uma nova conexão
-    client_socket, addr = server_socket.accept()
-
-    # Inicia uma nova thread para lidar com a conexão
-    client_handler = threading.Thread(target=handle_connection, args=(client_socket,))
-    client_handler.start()
+function arrangement(n, r) {
+    return factorial(n) / factorial(n - r);
+}
