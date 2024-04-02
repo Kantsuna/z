@@ -1,10 +1,17 @@
-FROM python:3.9-slim
+# Use the Python 3.8 image
+FROM python:3.8
 
-# Crie um diretório de trabalho no contêiner
-WORKDIR /math_server
+# Set the working directory in the container
+WORKDIR /app
 
-# Copie o arquivo math_server.py para o contêiner
-COPY . /app/
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-# Comando para executar o servidor Python quando o contêiner for iniciado
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Expose the port the app runs on
+EXPOSE 12345
+
+# Run the application
 CMD ["python", "math_server.py"]
