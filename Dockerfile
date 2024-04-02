@@ -2,7 +2,7 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-# Instalando dependências (se houver)
+# Instalando dependências (se hosuver)
 RUN pip install math
 
 # Copiando o script do servidor Python para o contêiner
