@@ -1,58 +1,51 @@
-const express = require('express');
-const app = express();
+import socket
+import math
 
-// Função para calcular fatorial
-function calcularFatorial(n) {
-    return n === 0 ? 1 : n * calcularFatorial(n - 1);
-}
+def calculate_function(data):
+    parts = data.split(',')
+    if len(parts) < 2:
+        return "Erro: Não há argumentos suficientes."
+    try:
+        operation = parts[0]
+        values = list(map(int, parts[1:]))
+        if operation == "fatorial":
+            result = math.factorial(values[0])
+        elif operation == "arranjo":
+            result = math.perm(values[0], values[1])
+        elif operation == "combinação":
+            result = math.comb(values[0], values[1])
+        elif operation == "permutação":
+            result = math.perm(values[0])
+        else:
+            return "Erro: Operação inválida."
+        return str(result)
+    except ValueError:
+        return "Erro: Argumentos inválidos."
 
-// Função para calcular arranjo
-function calcularArranjo(n, k) {
-    return calcularFatorial(n) / calcularFatorial(n - k);
-}
+def main():
+    host = '127.0.0.1'
+    port = 12345
 
-// Função para calcular combinação
-function calcularCombinação(n, k) {
-    return calcularFatorial(n) / (calcularFatorial(k) * calcularFatorial(n - k));
-}
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((host, port))
+    server_socket.listen(5)
 
-// Função para calcular permutação
-function calcularPermutação(n) {
-    return calcularFatorial(n);
-}
+    print("Servidor TCP está em execução...")
 
-// Rota para calcular fatorial
-app.get('/fatorial/:n', (req, res) => {
-    const n = parseInt(req.params.n);
-    const resultado = calcularFatorial(n);
-    res.json({ resultado });
-});
+    while True:
+        client_socket, addr = server_socket.accept()
+        print("Conexão recebida de:", addr)
 
-// Rota para calcular arranjo
-app.get('/arranjo/:n/:k', (req, res) => {
-    const n = parseInt(req.params.n);
-    const k = parseInt(req.params.k);
-    const resultado = calcularArranjo(n, k);
-    res.json({ resultado });
-});
+        data = client_socket.recv(1024).decode()
+        print("Dados recebidos:", data)
 
-// Rota para calcular combinação
-app.get('/combinacao/:n/:k', (req, res) => {
-    const n = parseInt(req.params.n);
-    const k = parseInt(req.params.k);
-    const resultado = calcularCombinação(n, k);
-    res.json({ resultado });
-});
+        response = calculate_function(data)
 
-// Rota para calcular permutação
-app.get('/permutacao/:n', (req, res) => {
-    const n = parseInt(req.params.n);
-    const resultado = calcularPermutação(n);
-    res.json({ resultado });
-});
+        print("Resultado:", response)
 
-// Iniciar o servidor
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Servidor está ouvindo na porta ${port}`);
-});
+        client_socket.send(response.encode())
+
+        client_socket.close()
+
+if __name__ == "__main__":
+    main()
