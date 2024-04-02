@@ -1,13 +1,10 @@
 FROM python:3.9-slim
 
-# Crie um diretório de trabalho no contêine
-WORKDIR /app
-
 # Copie o arquivo math_server.py para o contêiner
-COPY math_server.py /app/
+COPY math_server.py
 
 # Exponha a porta 8080
 EXPOSE 8080
 
 # Comando para executar o servidor Python quando o contêiner for iniciado
-CMD ["python3", "/app/math_server.py"]
+CMD ["python", "math_server.py"]
