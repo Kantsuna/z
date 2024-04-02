@@ -1,4 +1,4 @@
-# Use the Python 3.8 image
+# Use the Python 3.8 imag
 FROM python:3.8
 
 # Set the working directory in the container
