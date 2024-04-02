@@ -1,14 +1,19 @@
-# Use the Python 3.8 imag
-FROM python:3.8
+# Base Image
+FROM python:3.9-slim
 
-# Set the working directory in the container
+# Work directory
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Copy requirements and install dependencies
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
 
-# Expose the port the app runs on
+# Copy other project files
+COPY . .
+
+# Expose a port to Containers 
 EXPOSE 8080
 
-# Run the application
-CMD ["python", "math_server.py"]
+# Command to run on server
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
+
