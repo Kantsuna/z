@@ -10,7 +10,7 @@ Flask-SQLAlchemy==2.5.1
 Flask-Migrate==4.0.7
 Flask-Login==0.5.0
 Flask-WTF==1.2.1
-WTForms==3.0.2
+WTForms==3.1.2
 Flask-Cors==3.1.1
 Flask-Mail==0.9.1
 Flask-RESTful==0.3.9
