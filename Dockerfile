@@ -1,5 +1,8 @@
 FROM python:3.9-slim
 
+# Crie um diretório de trabalho no contêiner
+WORKDIR /app
+
 # Copie o arquivo math_server.py para o contêiner
 COPY math_server.py /app/
 
