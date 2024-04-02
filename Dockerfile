@@ -1,1 +1,3 @@
-docker build -t math_server .
+FROM back4app/nginx
+
+EXPOSE 8080
