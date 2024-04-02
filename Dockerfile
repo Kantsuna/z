@@ -1,51 +1,34 @@
-import socket
+from flask import Flask, request
 import math
 
-def calculate_function(data):
-    parts = data.split(',')
-    if len(parts) < 2:
-        return "Erro: Não há argumentos suficientes."
-    try:
-        operation = parts[0]
-        values = list(map(int, parts[1:]))
-        if operation == "fatorial":
-            result = math.factorial(values[0])
-        elif operation == "arranjo":
-            result = math.perm(values[0], values[1])
-        elif operation == "combinação":
-            result = math.comb(values[0], values[1])
-        elif operation == "permutação":
-            result = math.perm(values[0])
-        else:
-            return "Erro: Operação inválida."
-        return str(result)
-    except ValueError:
-        return "Erro: Argumentos inválidos."
+app = Flask(__name__)
 
-def main():
-    host = '127.0.0.1'
-    port = 12345
+@app.route('/factorial')
+def factorial():
+    n = int(request.args.get('n'))
+    result = math.factorial(n)
+    return str(result)
 
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind((host, port))
-    server_socket.listen(5)
+@app.route('/permutation')
+def permutation():
+    n = int(request.args.get('n'))
+    r = int(request.args.get('r'))
+    result = math.perm(n, r)
+    return str(result)
 
-    print("Servidor TCP está em execução...")
+@app.route('/combination')
+def combination():
+    n = int(request.args.get('n'))
+    r = int(request.args.get('r'))
+    result = math.comb(n, r)
+    return str(result)
 
-    while True:
-        client_socket, addr = server_socket.accept()
-        print("Conexão recebida de:", addr)
+@app.route('/arrangement')
+def arrangement():
+    n = int(request.args.get('n'))
+    r = int(request.args.get('r'))
+    result = math.perm(n, r)
+    return str(result)
 
-        data = client_socket.recv(1024).decode()
-        print("Dados recebidos:", data)
-
-        response = calculate_function(data)
-
-        print("Resultado:", response)
-
-        client_socket.send(response.encode())
-
-        client_socket.close()
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
