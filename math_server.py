@@ -13,46 +13,39 @@ def combination(n, r):
 def arrangement(n, r):
     return math.perm(n, r)
 
-def handle_client_connection(client_socket):
-    while True:
-        request = client_socket.recv(1024).decode('utf-8')
-        if not request:
-            break
-        
-        parts = request.split()
-        if len(parts) != 3:
-            response = "Invalid request. Please provide function and arguments."
+def handle_request(request):
+    try:
+        function, params = request.split(':')
+        params = [int(param) for param in params.split(',')]
+        if function == 'factorial':
+            result = factorial(*params)
+        elif function == 'permutation':
+            result = permutation(*params)
+        elif function == 'combination':
+            result = combination(*params)
+        elif function == 'arrangement':
+            result = arrangement(*params)
         else:
-            try:
-                function = parts[0]
-                arg1 = int(parts[1])
-                arg2 = int(parts[2])
+            result = "Invalid function"
+    except Exception as e:
+        result = str(e)
+    return str(result)
 
-                if function == "factorial":
-                    result = factorial(arg1)
-                elif function == "permutation":
-                    result = permutation(arg1, arg2)
-                elif function == "combination":
-                    result = combination(arg1, arg2)
-                elif function == "arrangement":
-                    result = arrangement(arg1, arg2)
-                else:
-                    result = "Invalid function."
-                
-                response = str(result)
-            except Exception as e:
-                response = f"Error: {e}"
+def main():
+    host = '0.0.0.0'
+    port = 12345
 
-        client_socket.send(response.encode('utf-8'))
-
-def start_server():
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(('0.0.0.0', 8080))
-    server_socket.listen(5)
-    print("Math server is listening on port 12345...")
-    while True:
-        client_socket, _ = server_socket.accept()
-        handle_client_connection(client_socket)
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((host, port))
+        s.listen(5)
+        print(f"Server listening on {host}:{port}...")
+        while True:
+            conn, addr = s.accept()
+            with conn:
+                print(f"Connected by {addr}")
+                data = conn.recv(1024).decode('utf-8')
+                result = handle_request(data)
+                conn.sendall(result.encode('utf-8'))
 
 if __name__ == "__main__":
-    start_server()
+    main()
