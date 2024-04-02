@@ -33,7 +33,7 @@ def handle_request(request):
 
 def main():
     host = '0.0.0.0'
-    port = 12345
+    port = 8080
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((host, port))
